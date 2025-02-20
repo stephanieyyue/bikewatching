@@ -36,6 +36,39 @@ const tooltip = d3.select("body")
 
 map.on('style.load', () => {
     console.log("Map style loaded!");
+    // Define a common style for bike lanes
+    const bikeLineStyle = {
+        'line-color': '#32D400',  // Bright green
+        'line-width': 3,
+        'line-opacity': 0.6
+    };
+    
+    // Add Boston bike lanes
+    map.addSource('boston_route', {
+        type: 'geojson',
+        data: 'https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::existing-bike-network-2022.geojson'
+    });
+    
+    map.addLayer({
+        id: 'bike-lanes-boston',
+        type: 'line',
+        source: 'boston_route',
+        paint: bikeLineStyle
+    });
+    
+    // Add Cambridge bike lanes
+    map.addSource('cambridge_route', {
+        type: 'geojson',
+        data: 'https://raw.githubusercontent.com/cambridgegis/cambridgegis_data/main/Recreation/Bike_Facilities/RECREATION_BikeFacilities.geojson'
+    });
+    
+    map.addLayer({
+        id: 'bike-lanes-cambridge',
+        type: 'line',
+        source: 'cambridge_route',
+        paint: bikeLineStyle
+    });
+
     function minutesSinceMidnight(dateString) {
         const date = new Date(dateString);
         return date.getUTCHours() * 60 + date.getUTCMinutes(); // Force UTC calculation
@@ -144,6 +177,10 @@ map.on('style.load', () => {
             .attr("fill-opacity", 0.6)
             .attr("stroke", "white")
             .attr("stroke-width", 1);
+            
+        // Update the tooltip text to reflect current traffic values
+        circles.select("title")
+            .text(d => `${d.name || d.short_name || "Station"}: ${d.totalTraffic || 0} trips (${d.departures || 0} departures, ${d.arrivals || 0} arrivals)`);
     
         console.log("✅ Map should now be updating!");
     }
@@ -184,7 +221,14 @@ map.on('style.load', () => {
                 .attr("fill", "steelblue")
                 .attr("stroke", "white")
                 .attr("stroke-width", 1)
-                .attr("opacity", 0.8);
+                .attr("opacity", 0.8)
+                .attr("pointer-events", "auto") // Enable pointer events on circles
+                .each(function(d) {
+                    // Add <title> element inside each circle for browser tooltips
+                    d3.select(this)
+                        .append("title")
+                        .text(`${d.name || d.short_name || "Station"}: 0 trips (0 departures, 0 arrivals)`);
+                });
 
             updatePositions();
         })
