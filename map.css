@@ -25,4 +25,37 @@ html, body {
     z-index: 1;
   }
   
+  .tooltip {
+    position: absolute;
+    background-color: white;
+    border: 1px solid black;
+    padding: 5px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 1000; /* Ensure it's above everything */
+}
+
+header {
+    display: flex;
+    gap: 1em;
+    align-items: baseline;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+label {
+    margin-left: auto;
+}
+
+time, em {
+    display: block;
+}
+
+em {
+    font-style: italic;
+    color: gray;
+}
+
   
